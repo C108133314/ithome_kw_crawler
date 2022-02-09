@@ -21,6 +21,7 @@ def random_proxy():
 
 def request_search_result(kw):
     global round_count
+    global start
     while start != -1:
         params = {
             "cse_tok":cse_token,
