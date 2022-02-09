@@ -66,6 +66,7 @@ if __name__ == '__main__':
     s = requests.Session()
     #s.headers.update(headers)
     #s.proxies.update(proxies)
+    s.get("https://www.ithome.com.tw/search")
     result = s.get("https://cse.google.com/cse/cse.js?cx=007216589292210379395:mfcapxjffo4", params = {"cx": "007216589292210379395:mfcapxjffo4"})
     soup = BeautifulSoup(result.content, "html.parser")
     #get cx
