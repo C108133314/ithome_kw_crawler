@@ -50,7 +50,6 @@ def request_search_result(kw):
 
 def get_list_item(result, next_rount):
     global start
-    print(result)
     temp_json = result.split("/*O_o*/\ngoogle.search.cse.api2711(")[1].split(");")[0]
     json_data = json.loads(temp_json)
     for i in json_data['results']:
