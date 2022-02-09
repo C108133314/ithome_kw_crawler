@@ -5,6 +5,7 @@ import json
 import pandas as pd
 from fake_useragent import UserAgent
 import random
+import time
 
 #跑太多次會被鎖，會連瀏覽器都進不去，慎用
 
@@ -43,6 +44,8 @@ def request_search_result(kw):
         result = s.get("https://cse.google.com/cse/element/v1", params = params)
         round_count+=1
         get_list_item(result.text, round_count )
+        print("sleep for 20s")
+        time.sleep(20)
 
 def get_list_item(result, next_rount):
     global start
@@ -78,6 +81,8 @@ if __name__ == '__main__':
     cse_token = re.findall(r'": ".+"', temp[0])[0][4:-1]
 
     for i in target_kw:
+        print("sleep for 30s")
+        time.sleep(30)
         title, url, abstract = [], [], []
         request_search_result(i)
         final_result = {
