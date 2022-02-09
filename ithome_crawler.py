@@ -8,6 +8,7 @@ import random
 import time
 
 #跑太多次會被鎖，會連瀏覽器都進不去，慎用
+#加入等待時間，會較久，但稍微降低被鎖的機率
 
 def random_useragent():
     headers = {'User-agent': UserAgent().random}
@@ -49,6 +50,7 @@ def request_search_result(kw):
 
 def get_list_item(result, next_rount):
     global start
+    print(result)
     temp_json = result.split("/*O_o*/\ngoogle.search.cse.api2711(")[1].split(");")[0]
     json_data = json.loads(temp_json)
     for i in json_data['results']:
@@ -65,11 +67,11 @@ if __name__ == '__main__':
     target_kw = ["零時差攻擊","跨網站指令碼", "SQL注入"] #target_kw
     start = 0
     round_count = 0
-    #headers = random_useragent()
-    #proxies = random_proxy()
+    headers = random_useragent() #在colab上跑需註解掉
+    proxies = random_proxy()#在colab上跑需註解掉
     s = requests.Session()
-    #s.headers.update(headers)
-    #s.proxies.update(proxies)
+    s.headers.update(headers)#在colab上跑需註解掉
+    s.proxies.update(proxies)#在colab上跑需註解掉
     s.get("https://www.ithome.com.tw/search")
     result = s.get("https://cse.google.com/cse/cse.js?cx=007216589292210379395:mfcapxjffo4", params = {"cx": "007216589292210379395:mfcapxjffo4"})
     soup = BeautifulSoup(result.content, "html.parser")
@@ -81,8 +83,6 @@ if __name__ == '__main__':
     cse_token = re.findall(r'": ".+"', temp[0])[0][4:-1]
 
     for i in target_kw:
-        print("sleep for 30s")
-        time.sleep(30)
         title, url, abstract = [], [], []
         request_search_result(i)
         final_result = {
@@ -92,4 +92,6 @@ if __name__ == '__main__':
         }
         df1 = pd.DataFrame(final_result,columns = [column for column in final_result])
         df1.to_excel(i + "-關鍵字文章.xlsx",index=True,header=True,)  
+        print("sleep for 30s")
+        time.sleep(30)
     print("done")
