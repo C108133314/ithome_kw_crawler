@@ -44,27 +44,39 @@ def request_search_result(kw):
         result = s.get("https://cse.google.com/cse/element/v1", params = params)
         round_count+=1
         get_list_item(result.text, round_count )
-        print("sleep for 20s")
-        time.sleep(20)
 
 def get_list_item(result, next_rount):
-    global start, title, url,abstract
-    temp_json = result.split("/*O_o*/\ngoogle.search.cse.api2711(")[1].split(");")[0]
-    json_data = json.loads(temp_json)
-    for i in json_data['results']:
-        title.append(i['titleNoFormatting'])
-        url.append(i['richSnippet']['metatags']['ogUrl'])
-        abstract.append(i['contentNoFormatting'])
+    global start, title, url,abstract,overall_status
     try:
-        start = int(json_data['cursor']['pages'][next_rount]['start'])
-    except Exception as e:
+        temp_json = result.split("/*O_o*/\ngoogle.search.cse.api2711(")[1].split(");")[0]
+        json_data = json.loads(temp_json)
+        try:
+            a = json_data['results']
+        except:
+            print(json_data)
+            start = -1
+            overall_status = False
+        for i in json_data['results']:
+            title.append(i['titleNoFormatting'])
+            url.append(i['richSnippet']['metatags']['ogUrl'])
+            abstract.append(i['contentNoFormatting'])
+        try:
+            start = int(json_data['cursor']['pages'][next_rount]['start'])
+            print("sleep for 20s")
+            time.sleep(20)
+        except Exception as e:
+            start = -1
+    except:
+        print("被擋住了QQ")
         start = -1
+        overall_status = False
+    
+    
         
 
 if __name__ == '__main__':
-    target_kw = ["零時差攻擊","跨網站指令碼", "SQL注入"] #target_kw
-    start = 0
-    round_count = 0
+    overall_status = True
+    target_kw = [ "零時差攻擊","跨網站指令碼", "SQL注入"] #target_kw
     headers = random_useragent() #在colab上跑需註解掉
     proxies = random_proxy()#在colab上跑需註解掉
     s = requests.Session()
@@ -81,6 +93,11 @@ if __name__ == '__main__':
     cse_token = re.findall(r'": ".+"', temp[0])[0][4:-1]
 
     for i in target_kw:
+        if not overall_status:
+            break
+        print("start-" + i)
+        start = 0
+        round_count = 0
         title, url, abstract = [], [], []
         request_search_result(i)
         final_result = {
@@ -90,6 +107,9 @@ if __name__ == '__main__':
         }
         df1 = pd.DataFrame(final_result,columns = [column for column in final_result])
         df1.to_excel(i + "-關鍵字文章.xlsx",index=True,header=True,)  
-        print("sleep for 30s")
-        time.sleep(30)
+        
+        if overall_status:
+            print(i+"-done")
+            print("sleep for 30s")
+            time.sleep(30)
     print("done")
