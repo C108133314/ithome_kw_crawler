@@ -22,8 +22,7 @@ def random_proxy():
     return proxies
 
 def request_search_result(kw):
-    global round_count
-    global start
+    global round_count,start
     while start != -1:
         params = {
             "cse_tok":cse_token,
@@ -49,7 +48,7 @@ def request_search_result(kw):
         time.sleep(20)
 
 def get_list_item(result, next_rount):
-    global start
+    global start, title, url,abstract
     temp_json = result.split("/*O_o*/\ngoogle.search.cse.api2711(")[1].split(");")[0]
     json_data = json.loads(temp_json)
     for i in json_data['results']:
